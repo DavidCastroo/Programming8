@@ -6,11 +6,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Veterinary.API.Migrations
 {
     /// <inheritdoc />
-    public partial class TablesFull : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Owners",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Document = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    FixedPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CellPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Owners", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "PetTypes",
                 columns: table => new
@@ -67,6 +86,33 @@ namespace Veterinary.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Agendas",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Remarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsAvailable = table.Column<bool>(type: "bit", nullable: false),
+                    OwnersId = table.Column<int>(type: "int", nullable: true),
+                    PetsId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Agendas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Agendas_Owners_OwnersId",
+                        column: x => x.OwnersId,
+                        principalTable: "Owners",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Agendas_Pets_PetsId",
+                        column: x => x.PetsId,
+                        principalTable: "Pets",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Histories",
                 columns: table => new
                 {
@@ -94,6 +140,16 @@ namespace Veterinary.API.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Agendas_OwnersId",
+                table: "Agendas",
+                column: "OwnersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Agendas_PetsId",
+                table: "Agendas",
+                column: "PetsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Histories_PetId",
                 table: "Histories",
                 column: "PetId");
@@ -118,6 +174,9 @@ namespace Veterinary.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Agendas");
+
+            migrationBuilder.DropTable(
                 name: "Histories");
 
             migrationBuilder.DropTable(
@@ -125,6 +184,9 @@ namespace Veterinary.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "ServiceTypes");
+
+            migrationBuilder.DropTable(
+                name: "Owners");
 
             migrationBuilder.DropTable(
                 name: "PetTypes");

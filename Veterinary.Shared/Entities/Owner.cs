@@ -35,5 +35,7 @@ namespace Veterinary.Shared.Entities
         public string CellPhone { get; set; }
         public string Address { get; set; }
         public string FullName => $"{FirstName}{LastName}";
+
+        public ICollection<Agenda> Agendas { get; set; }
     }
 }

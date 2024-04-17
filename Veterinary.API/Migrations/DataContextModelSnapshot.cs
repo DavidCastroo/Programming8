@@ -22,6 +22,38 @@ namespace Veterinary.API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Veterinary.Shared.Entities.Agenda", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsAvailable")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("OwnersId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PetsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnersId");
+
+                    b.HasIndex("PetsId");
+
+                    b.ToTable("Agendas");
+                });
+
             modelBuilder.Entity("Veterinary.Shared.Entities.History", b =>
                 {
                     b.Property<int>("Id")
@@ -176,6 +208,21 @@ namespace Veterinary.API.Migrations
                     b.ToTable("ServiceTypes");
                 });
 
+            modelBuilder.Entity("Veterinary.Shared.Entities.Agenda", b =>
+                {
+                    b.HasOne("Veterinary.Shared.Entities.Owner", "Owners")
+                        .WithMany("Agendas")
+                        .HasForeignKey("OwnersId");
+
+                    b.HasOne("Veterinary.Shared.Entities.Pet", "Pets")
+                        .WithMany("Agendas")
+                        .HasForeignKey("PetsId");
+
+                    b.Navigation("Owners");
+
+                    b.Navigation("Pets");
+                });
+
             modelBuilder.Entity("Veterinary.Shared.Entities.History", b =>
                 {
                     b.HasOne("Veterinary.Shared.Entities.Pet", "Pet")
@@ -206,8 +253,15 @@ namespace Veterinary.API.Migrations
                     b.Navigation("PetType");
                 });
 
+            modelBuilder.Entity("Veterinary.Shared.Entities.Owner", b =>
+                {
+                    b.Navigation("Agendas");
+                });
+
             modelBuilder.Entity("Veterinary.Shared.Entities.Pet", b =>
                 {
+                    b.Navigation("Agendas");
+
                     b.Navigation("Histories");
                 });
 
